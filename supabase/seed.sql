@@ -1,0 +1,5 @@
+-- Seed strategy
+-- Plans and feature flags are inserted by the numbered migrations.
+-- This file stays empty of tenant data. Do not add prospects, messages,
+-- payments, meetings, or demo workspaces here.
+-- `supabase db reset` reapplies migrations, then runs this file.

@@ -1,0 +1,70 @@
+name: Deploy
+
+# Manual only. This workflow never applies database migrations.
+# Review supabase/migrations yourself and apply them with a non-destructive push
+# before promoting a release. Do not add supabase db reset or drop commands here.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  verify:
+    name: Verify release candidate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build shared package
+        run: npm run build -w @prospectra/shared
+
+      - name: Check migrations
+        run: node scripts/check-migrations.mjs
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit and integration tests
+        run: npm test
+
+      - name: Build frontend
+        run: npm run build
+
+      - name: Build worker
+        run: npm run build -w @prospectra/worker
+
+      - name: Smoke
+        run: node scripts/smoke.mjs
+        env:
+          SMOKE_APP_URL: ${{ secrets.SMOKE_APP_URL }}
+          SMOKE_WORKER_URL: ${{ secrets.SMOKE_WORKER_URL }}
+
+      - name: Deployment gate
+        run: |
+          echo "Migrations were not applied by this workflow."
+          if [ -z "${VERCEL_TOKEN}" ]; then
+            echo "VERCEL_TOKEN is not configured. Frontend was not deployed."
+          else
+            echo "VERCEL_TOKEN is present. Deploy the built frontend with the Vercel project linked to this repository."
+          fi
+          if [ -z "${WORKER_HOST}" ]; then
+            echo "WORKER_HOST is not configured. Worker was not deployed."
+          else
+            echo "WORKER_HOST is present. Deploy the worker artifact separately and check /health."
+          fi
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          WORKER_HOST: ${{ secrets.WORKER_HOST }}

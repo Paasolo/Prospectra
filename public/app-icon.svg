@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Prospectra app icon">
+  <rect width="512" height="512" rx="112" fill="#0B1F3A"/>
+  <path d="M144 336V176h114c49 0 81 27 81 69 0 42-32 73-82 73h-41v18H144zm76-69h38c23 0 37-12 37-32s-14-31-37-31h-38v63z" fill="#FFFFFF"/>
+  <path d="M352 160l64 48-64 48V160z" fill="#2563EB"/>
+</svg>

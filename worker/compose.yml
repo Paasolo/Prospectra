@@ -1,0 +1,12 @@
+# Local or single-host worker. Copy ../.env first. This file does not apply database migrations.
+services:
+  worker:
+    build:
+      context: ..
+      dockerfile: worker/Dockerfile
+    env_file:
+      - ../.env
+    ports:
+      - "8787:8787"
+    restart: unless-stopped
+    init: true
